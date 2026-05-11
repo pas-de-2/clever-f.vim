@@ -378,6 +378,16 @@ function! clever_f#repeat(back) abort
     return cmd
 endfunction
 
+function! clever_f#repeat_with_direction(back) abort
+    let mode = s:mode()
+    let pmap = get(s:previous_map, mode, '')
+    let back = a:back
+    if g:clever_f_fix_key_direction && pmap =~# '\u'
+        let back = !back
+    endif
+    return clever_f#repeat(back)
+endfunction
+
 " absolutely moved forward?
 function! s:moves_forward(p, n) abort
     if a:p[0] != a:n[0]
