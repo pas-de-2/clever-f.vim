@@ -91,6 +91,9 @@ the cursor's direction.
 
 Highlight can be cleared after timeout. See below section.
 
+### Restrict mark direction
+To avoid highlighting characters in the opposite direction of your current search, set `g:clever_f_restrict_mark_direction` to `1`.
+
 ### Highlighting characters which can be directly jumped to
 
 clever-f.vim can highlight the characters in the line which can be directly jumped to. With this feature, you

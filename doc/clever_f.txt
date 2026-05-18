@@ -239,6 +239,14 @@ g:clever_f_mark_direct_color                      *g:clever_f_mark_direct_color*
     |g:clever_f_mark_direct_color| must be set before |clever-f| is loaded.
     (e.g. in your |vimrc|)
 
+g:clever_f_restrict_mark_direction          *g:clever_f_restrict_mark_direction*
+
+    If |g:clever_f_restrict_mark_direction| is enabled, |clever-f| will only 
+    highlight characters in the direction you're currently searching,
+    otherwise |clever-f| highlights all characters in the current line.
+    The default value is 0.
+
+
 
 ==============================================================================
 SPECIAL THANKS                                     *clever-f.vim-special-thanks*

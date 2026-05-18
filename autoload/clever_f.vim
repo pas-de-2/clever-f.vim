@@ -21,6 +21,7 @@ let g:clever_f_mark_char               = get(g:, 'clever_f_mark_char', 1)
 let g:clever_f_repeat_last_char_inputs = get(g:, 'clever_f_repeat_last_char_inputs', ["\<CR>"])
 let g:clever_f_mark_direct             = get(g:, 'clever_f_mark_direct', 0)
 let g:clever_f_highlight_timeout_ms    = get(g:, 'clever_f_highlight_timeout_ms', 0)
+let g:clever_f_restrict_mark_direction = get(g:, 'clever_f_restrict_mark_direction', 0)
 
 " below variable must be set before loading this script
 let g:clever_f_clean_labels_eagerly    = get(g:, 'clever_f_clean_labels_eagerly', 1)
@@ -196,8 +197,16 @@ function! clever_f#_mark_direct(forward, count) abort
 endfunction
 
 function! s:mark_char_in_current_line(map, char) abort
-    let regex = '\%' . line('.') . 'l' . s:generate_pattern(a:map, a:char)
-    call matchadd('CleverFChar', regex , 999)
+    if !g:clever_f_restrict_mark_direction
+        let regex = '\%' . line('.') . 'l' . s:generate_pattern(a:map, a:char)
+    else
+        let col = col('.')
+        let direction_constraint = a:map =~# '\l'
+            \ ? '\%>' . col . 'c'
+            \ : '\%<' . col . 'c'
+        let regex = '\%' . line('.') . 'l' . direction_constraint . s:generate_pattern(a:map, a:char)
+    endif
+    call matchadd('CleverFChar', regex, 999)
 endfunction
 
 " Note:
@@ -409,15 +418,11 @@ function! clever_f#find(map, char_num) abort
     endif
 
     let moves_forward = s:moves_forward(before_pos, next_pos)
-
-    " update highlight when cursor moves across lines
     let mode = s:mode()
-    if g:clever_f_mark_char
-        if next_pos[0] != before_pos[0]
-            \ || (a:map ==? 't' && !s:first_move[mode] && clever_f#compat#xor(s:moved_forward, moves_forward))
-            call s:remove_highlight()
-            call s:mark_char_in_current_line(a:map, a:char_num)
-        endif
+
+    if g:clever_f_mark_char && mode(1) !~# 'no'
+        call s:remove_highlight()
+        call s:mark_char_in_current_line(a:map, a:char_num)
     endif
 
     let s:moved_forward = moves_forward
